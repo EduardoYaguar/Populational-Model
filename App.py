@@ -40,8 +40,8 @@ class MyFrame(customtkinter.CTkScrollableFrame):
             for i in range(1,cycles):
                 prey_population.append(prey(i))
                 predator_population.append(predator(i))
-        prey_e = c / (b * f)
-        predator_e = (a / b) * (1 - prey_e / K)
+        prey_e = c / (b * f) #punto de equilibrio presas
+        predator_e = (a / b) * (1 - prey_e / K) #punto de equilibrio predadores
 
         def plot_population_time():
 
