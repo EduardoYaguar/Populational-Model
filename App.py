@@ -7,21 +7,48 @@ class MyFrame(customtkinter.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure((0,1), weight=1)
+        self.grid_rowconfigure((0,1,2,3), weight=1)
 
-        cycles = 3000
+        self.cycles = 3000
+
+        self.a_slider = customtkinter.CTkSlider(self, from_=0.01, to=0.1, number_of_steps=100, command=self.update_plot)
+        self.a_slider.set(0.04)
+        self.a_slider.grid(row=1, column=0, sticky='ew', padx=10, pady=10)
+        self.a_label = customtkinter.CTkLabel(self, text="Prey intrinsic growth rate (a)")
+        self.a_label.grid(row=1, column=1, padx=10, pady=10)
+
+        self.b_slider = customtkinter.CTkSlider(self, from_=0.001, to=0.01, number_of_steps=100, command=self.update_plot)
+        self.b_slider.set(0.003)
+        self.b_slider.grid(row=2, column=0, sticky='ew', padx=10, pady=10)
+        self.b_label = customtkinter.CTkLabel(self, text="per-capita attack rate of predators on prey (b)")
+        self.b_label.grid(row=2, column=1, padx=10, pady=10)
+
+        self.c_slider = customtkinter.CTkSlider(self, from_=0.001, to=0.05, number_of_steps=100, command=self.update_plot)
+        self.c_slider.set(0.01)
+        self.c_slider.grid(row=3, column=0, sticky='ew', padx=10, pady=10)
+        self.c_label = customtkinter.CTkLabel(self, text="Predators natural deathrate (c)")
+        self.c_label.grid(row=3, column=1, padx=10, pady=10)
+
+        self.f_slider = customtkinter.CTkSlider(self, from_=0.01, to=0.1, number_of_steps=100, command=self.update_plot)
+        self.f_slider.set(0.02)
+        self.f_slider.grid(row=4, column=0, sticky='ew', padx=10, pady=10)
+        self.f_label = customtkinter.CTkLabel(self, text="Conversion rate (f)")
+        self.f_label.grid(row=4, column=1, padx=10, pady=10)
+
+        self.figure = None
+        self.update_plot()
 
 
-        #Datos Presas
+    def update_plot(self, event=None):
+        a = self.a_slider.get()
+        b = self.b_slider.get()
+        c = self.c_slider.get()
+        f = self.f_slider.get()
+
+
         prey_initial = 50 #población inicial presas
-        a = 0.04 # tasa de crecimiento intrínseca
         K = 1200 # capacidad de carga
-        b = 0.003 # tasa de ataque per capita de los depredadores sobre las presas 
-
-        #Datos Depredadores
         predator_initial = 20 # poblacion inicial predadores
-        c = 0.01 #tasa de mortalidad de forma natural
-        f = 0.02 #tasa de conversión de presas consumidas a nuevos depredadores
 
         prey_population = [prey_initial]
         predator_population = [predator_initial]
@@ -37,38 +64,32 @@ class MyFrame(customtkinter.CTkScrollableFrame):
             return predator_model + f * b * prey_model * predator_model - c * predator_model
         
         def model(): 
-            for i in range(1,cycles):
+            for i in range(1,self.cycles):
                 prey_population.append(prey(i))
                 predator_population.append(predator(i))
         prey_e = c / (b * f) #punto de equilibrio presas
         predator_e = (a / b) * (1 - prey_e / K) #punto de equilibrio predadores
 
-        def plot_population_time():
+        if self.figure:
+            self.figure.clear()
 
-            plt.figure(1)
-
-            plt.axhline(y=predator_e, color='red', linestyle='--')
-
-            plt.axhline(y=prey_e, color='red', linestyle='--')
-
-            plt.plot(np.arange(cycles), prey_population, label='Prey Population', markersize=marker_size)
-
-            plt.plot(np.arange(cycles), predator_population, label='Predator Population', markersize=marker_size)
-
-            plt.ylabel('Population')
-
-            plt.xlabel('Time')
-
-            plt.title('Predator and Prey Populations over Time')
-
-            plt.legend()
-            return plt.gcf()
         model()
-        figure = plot_population_time()
+        self.figure = plt.figure()
 
-        canvas = FigureCanvasTkAgg(figure, master=self)
+        plt.axhline(y=predator_e, color='red', linestyle='--')
+        plt.axhline(y=prey_e, color='red', linestyle='--')
+
+        plt.plot(np.arange(self.cycles), prey_population, label='Prey Population', markersize=marker_size)
+        plt.plot(np.arange(self.cycles), predator_population, label='Predator Population', markersize=marker_size)
+
+        plt.ylabel('Population')
+        plt.xlabel('Cycles')
+        plt.title('Predator and Prey Populations over Time')
+        plt.legend()
+
+        canvas = FigureCanvasTkAgg(self.figure, master=self)
         canvas.draw()
-        canvas.get_tk_widget().grid(row=0, column=0, sticky="nsew")
+        canvas.get_tk_widget().grid(row=0, column=0, sticky='nsew')
 
 
 class App(customtkinter.CTk):
