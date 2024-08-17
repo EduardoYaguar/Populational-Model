@@ -1,6 +1,6 @@
-# Predator-Prey Population Model
+# Predator Prey Population Model
 
-This project, created by **Eduardo Yaguar Falconí**, simulates and visualizes the relationship between predator and prey populations over time using the Lotka-Volterra equations.
+This project simulates and visualizes the relationship between predator and prey populations over time using the Lotka-Volterra equations.
 
 ## Description
 
