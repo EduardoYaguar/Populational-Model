@@ -102,7 +102,7 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
         self.title("Predator And Prey Population model")
-        self.geometry('1080x990')
+        self.geometry('1080x650')
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
