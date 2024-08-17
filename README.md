@@ -45,7 +45,7 @@ Where:
 ## Installation
 
 1. Clone this repository
-   `git clone https://github.com/EduardoYaguar/Populational-Model.git`  
+   `git clone https://github.com/EduardoYaguar/Predator-Prey-Population-Model.git`  
 
 3. Install the required dependencies:
    `pip install customtkinter matplotlib numpy`  
