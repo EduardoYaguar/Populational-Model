@@ -45,7 +45,7 @@ Where:
 ## Installation
 
 1. Clone this repository
-   `git clone https://github.com/username/predator-prey-model.git`  
+   `git clone https://github.com/EduardoYaguar/predator-prey-model.git`  
 
 3. Install the required dependencies:
    `pip install customtkinter matplotlib numpy`  
