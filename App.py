@@ -10,7 +10,7 @@ class MyFrame(customtkinter.CTkScrollableFrame):
         self.grid_rowconfigure((0,1,2,3), weight=1)
 
         self.cycles = 3000
-
+        #Se crean los sliders y sus labels
         self.a_slider = customtkinter.CTkSlider(self, from_=0.01, to=0.1, number_of_steps=100, command=self.update_plot)
         self.a_slider.set(0.04)
         self.a_slider.grid(row=1, column=0, sticky='ew', padx=10, pady=10)
@@ -40,6 +40,7 @@ class MyFrame(customtkinter.CTkScrollableFrame):
 
 
     def update_plot(self, event=None):
+        #Obtiene los parametros de los sliders y actualiza el plot
         a = self.a_slider.get()
         b = self.b_slider.get()
         c = self.c_slider.get()
@@ -54,45 +55,50 @@ class MyFrame(customtkinter.CTkScrollableFrame):
         predator_population = [predator_initial]
         marker_size = 2
 
-        def prey(n):
+        def prey(n): 
+            #Calcula la población de presas en un ciclo n
             prey_model = prey_population[n-1]
             predator_model = predator_population[n-1]
             return prey_model + a * prey_model * (1 - prey_model / K) - b * prey_model * predator_model
         def predator(n):
+            #Calcula la población de depredadores en un ciclo n
             prey_model = prey_population[n-1]
             predator_model = predator_population[n-1]
             return predator_model + f * b * prey_model * predator_model - c * predator_model
         
         def model(): 
+            #La función itera sobre los ciclos, actualizando la poblacion de presas y depredadores
             for i in range(1,self.cycles):
                 prey_population.append(prey(i))
                 predator_population.append(predator(i))
         prey_e = c / (b * f) #punto de equilibrio presas
         predator_e = (a / b) * (1 - prey_e / K) #punto de equilibrio predadores
 
+        #Si existe una figura se va a borrar para redibujar el gráfico
         if self.figure:
             self.figure.clear()
 
         model()
         self.figure = plt.figure()
-
-        plt.axhline(y=predator_e, color='red', linestyle='--')
+        #Se dibujan los puntos de equilibrio de las poblaciones
+        plt.axhline(y=predator_e, color='red', linestyle='--') 
         plt.axhline(y=prey_e, color='red', linestyle='--')
-
+        #Se genera un array con los numeros de los ciclos y se trazan las curvas de las poblaciones a lo largo de los ciclos
         plt.plot(np.arange(self.cycles), prey_population, label='Prey Population', markersize=marker_size)
         plt.plot(np.arange(self.cycles), predator_population, label='Predator Population', markersize=marker_size)
-
+        #Etiquetas y título del gráfico
         plt.ylabel('Population')
         plt.xlabel('Cycles')
         plt.title('Predator and Prey Populations over Time')
         plt.legend()
-
+        #Se integra el gráfico a la UI
         canvas = FigureCanvasTkAgg(self.figure, master=self)
         canvas.draw()
         canvas.get_tk_widget().grid(row=0, column=0, sticky='nsew')
 
 
 class App(customtkinter.CTk):
+    #Se configura la ventana principal de la app y se añade un objeto Myframe que es el widget que contiene las funcionalidades
     def __init__(self):
         super().__init__()
         self.title("Predator And Prey Population model")
@@ -105,6 +111,6 @@ class App(customtkinter.CTk):
         self.MyFrame.grid(row=0, column=0, sticky='nsew')
 
 
-
+#Se crea una instancia de la app y se inicia un bucle para mantener la ventana activa.
 app = App()
 app.mainloop()
