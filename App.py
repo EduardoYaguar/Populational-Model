@@ -7,33 +7,58 @@ class MyFrame(customtkinter.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure((0,1,2,3), weight=1)
+        self.grid_rowconfigure((0,1,2,3,4,5,6), weight=1)
 
         self.cycles = 3000
         #Se crean los sliders y sus labels
+
+        self.prey_initial_slider = customtkinter.CTkSlider(self, from_=10, to=100, number_of_steps=90, command=self.update_plot)
+        self.prey_initial_slider.set(50)
+        self.prey_initial_slider.grid(row=1, column=0, sticky='ew', padx=10, pady=10)
+        self.prey_initial_label = customtkinter.CTkLabel(self, text="Initial prey population")
+        self.prey_initial_label.grid(row=1, column=1, padx=10, pady=10)
+        self.prey_initial_value = customtkinter.CTkLabel(self, text=f"{self.prey_initial_slider.get():.0f}")
+        self.prey_initial_value.grid(row=1, column=2, padx=10, pady=10)
+
+        self.predator_initial_slider = customtkinter.CTkSlider(self, from_=5, to=50, number_of_steps=45, command=self.update_plot)
+        self.predator_initial_slider.set(20)
+        self.predator_initial_slider.grid(row=2, column=0, sticky='ew', padx=10, pady=10)
+        self.predator_initial_label = customtkinter.CTkLabel(self, text="Initial predator population")
+        self.predator_initial_label.grid(row=2, column=1, padx=10, pady=10)
+        self.predator_initial_value = customtkinter.CTkLabel(self, text=f"{self.predator_initial_slider.get():.0f}")
+        self.predator_initial_value.grid(row=2, column=2, padx=10, pady=10)
+
+        self.K_slider = customtkinter.CTkSlider(self, from_=500, to=2000, number_of_steps=1500, command=self.update_plot)
+        self.K_slider.set(1200)
+        self.K_slider.grid(row=3, column=0, sticky='ew', padx=10, pady=10)
+        self.K_label = customtkinter.CTkLabel(self, text="Carrying capacity (K)")
+        self.K_label.grid(row=3, column=1, padx=10, pady=10)
+        self.K_value = customtkinter.CTkLabel(self, text=f"{self.K_slider.get():.0f}")
+        self.K_value.grid(row=3, column=2, padx=10, pady=10)
+
         self.a_slider = customtkinter.CTkSlider(self, from_=0.01, to=0.1, number_of_steps=100, command=self.update_plot)
         self.a_slider.set(0.04)
-        self.a_slider.grid(row=1, column=0, sticky='ew', padx=10, pady=10)
+        self.a_slider.grid(row=4, column=0, sticky='ew', padx=10, pady=10)
         self.a_label = customtkinter.CTkLabel(self, text="Prey intrinsic growth rate (a)")
-        self.a_label.grid(row=1, column=1, padx=10, pady=10)
+        self.a_label.grid(row=4, column=1, padx=10, pady=10)
 
         self.b_slider = customtkinter.CTkSlider(self, from_=0.001, to=0.01, number_of_steps=100, command=self.update_plot)
         self.b_slider.set(0.003)
-        self.b_slider.grid(row=2, column=0, sticky='ew', padx=10, pady=10)
+        self.b_slider.grid(row=5, column=0, sticky='ew', padx=10, pady=10)
         self.b_label = customtkinter.CTkLabel(self, text="per-capita attack rate of predators on prey (b)")
-        self.b_label.grid(row=2, column=1, padx=10, pady=10)
+        self.b_label.grid(row=5, column=1, padx=10, pady=10)
 
         self.c_slider = customtkinter.CTkSlider(self, from_=0.001, to=0.05, number_of_steps=100, command=self.update_plot)
         self.c_slider.set(0.01)
-        self.c_slider.grid(row=3, column=0, sticky='ew', padx=10, pady=10)
+        self.c_slider.grid(row=6, column=0, sticky='ew', padx=10, pady=10)
         self.c_label = customtkinter.CTkLabel(self, text="Predators natural deathrate (c)")
-        self.c_label.grid(row=3, column=1, padx=10, pady=10)
+        self.c_label.grid(row=6, column=1, padx=10, pady=10)
 
         self.f_slider = customtkinter.CTkSlider(self, from_=0.01, to=0.1, number_of_steps=100, command=self.update_plot)
         self.f_slider.set(0.02)
-        self.f_slider.grid(row=4, column=0, sticky='ew', padx=10, pady=10)
+        self.f_slider.grid(row=7, column=0, sticky='ew', padx=10, pady=10)
         self.f_label = customtkinter.CTkLabel(self, text="Conversion rate (f)")
-        self.f_label.grid(row=4, column=1, padx=10, pady=10)
+        self.f_label.grid(row=7, column=1, padx=10, pady=10)
 
         self.figure = None
         self.update_plot()
@@ -41,15 +66,20 @@ class MyFrame(customtkinter.CTkScrollableFrame):
 
     def update_plot(self, event=None):
         #Obtiene los parametros de los sliders y actualiza el plot
+        self.prey_initial_value.configure(text=f"{self.prey_initial_slider.get():.0f}")
+        self.predator_initial_value.configure(text=f"{self.predator_initial_slider.get():.0f}")
+        self.K_value.configure(text=f"{self.K_slider.get():.0f}")
+
+
+
+        prey_initial = self.prey_initial_slider.get()
+        predator_initial = self.predator_initial_slider.get()
+        K = self.K_slider.get()
         a = self.a_slider.get()
         b = self.b_slider.get()
         c = self.c_slider.get()
         f = self.f_slider.get()
 
-
-        prey_initial = 50 #población inicial presas
-        K = 1200 # capacidad de carga
-        predator_initial = 20 # poblacion inicial predadores
 
         prey_population = [prey_initial]
         predator_population = [predator_initial]
